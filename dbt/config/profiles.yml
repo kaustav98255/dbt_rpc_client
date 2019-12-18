@@ -1,0 +1,13 @@
+# example profiles.yml file
+jaffle_shop:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: airflow-db
+      user: airflow
+      pass: airflow
+      port: 5432
+      dbname: airflow
+      schema: public
+      threads: 4

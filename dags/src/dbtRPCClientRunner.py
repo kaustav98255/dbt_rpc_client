@@ -21,12 +21,7 @@ class DBTRPCClient:
             self.url = "http://localhost:8580/jsonrpc"
 
         # baseline json spec for making rpc calls
-        self.json_spec = {
-           "jsonrpc": "2.0",
-            "method": "",
-            "id": "",
-            "params": {}
-        }
+        self.json_spec = dict(jsonrpc="2.0", method="", id="", params={})
 
         # will hold the logs for the current running process
         self.logs = pd.DataFrame()
@@ -248,4 +243,4 @@ class DBTRPCClient:
 
 if __name__ == "__main__":
     rpc_object = DBTRPCClient()
-    rpc_object.execute(task='test')
+    rpc_object.execute(task='compile')
