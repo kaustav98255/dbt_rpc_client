@@ -1,4 +1,4 @@
-# dbt_rpc_server
+# DBT RPC Client
 Docker DBT RPC server and an RPC client to run DBT tasks from Airflow DAGs.
 
 The `docker-componse.yml` creates a DBT RPC server, an airflow metadata db and the airflow scheduler and webserver.
