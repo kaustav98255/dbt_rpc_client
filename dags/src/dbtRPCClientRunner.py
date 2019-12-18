@@ -23,9 +23,6 @@ class DBTRPCClient:
         # baseline json spec for making rpc calls
         self.json_spec = dict(jsonrpc="2.0", method="", id="", params={})
 
-        # will hold the logs for the current running process
-        self.logs = pd.DataFrame()
-
     @staticmethod
     def get_json_spec(method, uid, params={}):
         """
