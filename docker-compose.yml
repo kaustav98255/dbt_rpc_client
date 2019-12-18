@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+    airflow-db:
+      image: postgres:9.6
+      container_name: airflow-db
+      environment:
+        - POSTGRES_USER=${POSTGRES_USER}
+        - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        - POSTGRES_DB=${POSTGRES_DB}
+
+    dbt-rpc:
+        image: dbt-rpc
+        container_name: dbt-rpc-server
+        restart: always
+        build:
+          context: ./dbt
+          dockerfile: ./Dockerfile
+
+        environment:
+            - DBT_PROFILES_DIR=/dbt/config/
+        volumes:
+          - ./dbt:/dbt
+        ports:
+          - "8580:8580"
+        command: dbt rpc
+
+    webserver:
+        image: puckel/docker-airflow
+        container_name: airflow-webserver
+        restart: always
+        depends_on:
+            - airflow-db
+            - dbt-rpc
+
+        environment:
+            - LOAD_EX=n
+            - PATH=/usr/local/airflow/.local/bin:/root/.local/bin:$PATH
+            - EXECUTOR=Sequential
+            - PYTHONPATH=:/usr/local/airflow
+            - AIRFLOW_DAGS=/usr/local/airflow
+            - AIRFLOW__SCHEDULER__CATCHUP_BY_DEFAULT=False
+            - AIRFLOW__WEBSERVER__RBAC=False
+            - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+            - AIRFLOW__CORE__FERNET_KEY=${AIRFLOW__CORE__FERNET_KEY}
+
+        volumes:
+            - ./dags:/usr/local/airflow/dags
+
+        ports:
+            - "8080:8080"
+
+        command: webserver
+
+        healthcheck:
+            test: ["CMD-SHELL", "[ -f /usr/local/airflow/airflow-webserver.pid ]"]
+            interval: 30s
+            timeout: 30s
+            retries: 3
